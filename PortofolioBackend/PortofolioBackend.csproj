@@ -20,4 +20,13 @@
         <PackageReference Include="System.Text.Json" Version="8.0.11" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Config\" />
+      <Folder Include="DTOs\" />
+      <Folder Include="Helpers\" />
+      <Folder Include="Middleware\" />
+      <Folder Include="Repositories\" />
+      <Folder Include="Services\" />
+    </ItemGroup>
+
 </Project>
