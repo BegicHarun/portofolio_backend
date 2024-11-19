@@ -1,52 +1,63 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace PortofolioBackend.Controllers
+[ApiController]
+[Route("api/[controller]")]
+public class ProjectController : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class ProjectController : ControllerBase
+    private readonly IProjectService _service;
+
+    public ProjectController(IProjectService service)
     {
-        private readonly AppDbContext _context;
+        _service = service;
+    }
 
-        public ProjectController(AppDbContext context)
+    // GET: api/Project
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<Project>>> GetAllProjects()
+    {
+        return Ok(await _service.GetAllProjectsAsync());
+    }
+
+    // GET: api/Project/{id}
+    [HttpGet("{id}")]
+    public async Task<ActionResult<Project>> GetProjectById(int id)
+    {
+        var project = await _service.GetProjectByIdAsync(id);
+        if (project == null)
         {
-            _context = context;
+            return NotFound();
+        }
+        return Ok(project);
+    }
+
+    // POST: api/Project
+    [HttpPost]
+    public async Task<ActionResult> CreateProject(Project project)
+    {
+        await _service.AddProjectAsync(project);
+        return CreatedAtAction(nameof(GetProjectById), new { id = project.Id }, project);
+    }
+
+    // PUT: api/Project/{id}
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateProject(int id, Project project)
+    {
+        if (id != project.Id)
+        {
+            return BadRequest("Project ID mismatch");
         }
 
-        // GET: api/Project
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Project>>> GetProjects()
-        {
-            return await _context.Projects.ToListAsync();
-        }
+        await _service.UpdateProjectAsync(project);
+        return NoContent();
+    }
 
-        // POST: api/Project
-        [HttpPost]
-        public async Task<ActionResult<Project>> CreateProject(Project project)
-        {
-            // Add the project to the database
-            _context.Projects.Add(project);
-            await _context.SaveChangesAsync();
-
-            // Return the created project with a 201 status code
-            return CreatedAtAction(nameof(GetProjectById), new { id = project.Id }, project);
-        }
-
-        // GET: api/Project/{id}
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Project>> GetProjectById(int id)
-        {
-            var project = await _context.Projects.FindAsync(id);
-
-            if (project == null)
-            {
-                return NotFound();
-            }
-
-            return project;
-        }
+    // DELETE: api/Project/{id}
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteProject(int id)
+    {
+        await _service.DeleteProjectAsync(id);
+        return NoContent();
     }
 }
