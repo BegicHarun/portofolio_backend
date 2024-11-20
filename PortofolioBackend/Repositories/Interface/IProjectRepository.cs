@@ -9,4 +9,5 @@ public interface IProjectRepository
     Task UpdateProjectAsync(Project project);
     Task DeleteProjectAsync(int id);
     Task<bool> ProjectExistsAsync(int id);
+    Task<(IEnumerable<Project>, int)> GetProjectsPaginatedAsync(int pageNumber, int pageSize);
 }

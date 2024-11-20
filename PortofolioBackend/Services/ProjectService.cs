@@ -34,4 +34,8 @@ public class ProjectService : IProjectService
     {
         await _repository.DeleteProjectAsync(id);
     }
+    public async Task<(IEnumerable<Project>, int)> GetProjectsPaginatedAsync(int pageNumber, int pageSize)
+    {
+        return await _repository.GetProjectsPaginatedAsync(pageNumber, pageSize);
+    }
 }

@@ -60,4 +60,20 @@ public class ProjectController : ControllerBase
         await _service.DeleteProjectAsync(id);
         return NoContent();
     }
+    [HttpGet("Paginated")]
+    public async Task<ActionResult> GetProjectsPaginated([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+    {
+        var (projects, totalRecords) = await _service.GetProjectsPaginatedAsync(pageNumber, pageSize);
+
+        var response = new
+        {
+            TotalRecords = totalRecords,
+            PageNumber = pageNumber,
+            PageSize = pageSize,
+            TotalPages = (int)Math.Ceiling((double)totalRecords / pageSize),
+            Data = projects
+        };
+
+        return Ok(response);
+    }
 }
