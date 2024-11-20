@@ -47,4 +47,14 @@ public class ProjectRepository : IProjectRepository
     {
         return await _context.Projects.AnyAsync(p => p.Id == id);
     }
+    public async Task<(IEnumerable<Project>, int)> GetProjectsPaginatedAsync(int pageNumber, int pageSize)
+    {
+        var totalRecords = await _context.Projects.CountAsync(); // Total number of records
+        var projects = await _context.Projects
+            .Skip((pageNumber - 1) * pageSize) // Skip records for previous pages
+            .Take(pageSize) // Take records for the current page
+            .ToListAsync();
+
+        return (projects, totalRecords); // Return projects and total record count
+    }
 }
