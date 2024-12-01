@@ -1,43 +1,26 @@
-using DotNetEnv; // For loading .env variables
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using PortofolioBackend.Repositories.Interface;
+using PortofolioBackend.Services.Interface;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Load environment variables from .env file
-Env.Load("/Users/harunbegic/Desktop/PortofolioBackend/.env");
-
-
-// Check if variables are loaded
-Console.WriteLine($"DB_HOST: {Environment.GetEnvironmentVariable("DB_HOST")}");
-Console.WriteLine($"DB_PORT: {Environment.GetEnvironmentVariable("DB_PORT")}");
-Console.WriteLine($"DB_NAME: {Environment.GetEnvironmentVariable("DB_NAME")}");
-Console.WriteLine($"DB_USER: {Environment.GetEnvironmentVariable("DB_USER")}");
-Console.WriteLine($"DB_PASSWORD: {Environment.GetEnvironmentVariable("DB_PASSWORD")}");
 
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Configure DbContext with PostgreSQL
+// Configure DbContext with PostgreSQL using appsettings.json or environment variables
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    // Build the connection string using environment variables
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-        .Replace("${DB_HOST}", Environment.GetEnvironmentVariable("DB_HOST"))
-        .Replace("${DB_PORT}", Environment.GetEnvironmentVariable("DB_PORT"))
-        .Replace("${DB_NAME}", Environment.GetEnvironmentVariable("DB_NAME"))
-        .Replace("${DB_USER}", Environment.GetEnvironmentVariable("DB_USER"))
-        .Replace("${DB_PASSWORD}", Environment.GetEnvironmentVariable("DB_PASSWORD"));
-    Console.WriteLine($"DB_HOST: {Environment.GetEnvironmentVariable("DB_HOST")}");
-    Console.WriteLine($"DB_PORT: {Environment.GetEnvironmentVariable("DB_PORT")}");
-    Console.WriteLine($"DB_NAME: {Environment.GetEnvironmentVariable("DB_NAME")}");
-    Console.WriteLine($"DB_USER: {Environment.GetEnvironmentVariable("DB_USER")}");
-    Console.WriteLine($"DB_PASSWORD: {Environment.GetEnvironmentVariable("DB_PASSWORD")}");
-
     options.UseNpgsql(connectionString);
 });
 
+// Register services and repositories
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<IContactRepository, ContactRepository>();
@@ -48,6 +31,36 @@ builder.Services.AddScoped<IExperienceRepository, ExperienceRepository>();
 builder.Services.AddScoped<IExperienceService, ExperienceService>();
 builder.Services.AddScoped<ISkillRepository, SkillRepository>();
 builder.Services.AddScoped<ISkillService, SkillService>();
+builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+builder.Services.AddScoped<IAdminAuthService, AdminAuthService>();
+
+// Configure JWT Authentication
+var jwtKey = builder.Configuration["Jwt:Key"];
+var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+var jwtAudience = builder.Configuration["Jwt:Audience"];
+
+var key = Encoding.ASCII.GetBytes(jwtKey);
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtIssuer,
+        ValidAudience = jwtAudience,
+        IssuerSigningKey = new SymmetricSecurityKey(key)
+    };
+});
+
+
+
 
 var app = builder.Build();
 
@@ -59,6 +72,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication(); // Ensure JWT authentication is enabled
 app.UseAuthorization();
 
 app.MapControllers();
