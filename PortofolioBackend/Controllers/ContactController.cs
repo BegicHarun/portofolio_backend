@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using PortofolioBackend.Data.Models;
 
 [ApiController]
@@ -34,6 +35,7 @@ public class ContactController : ControllerBase
     }
 
     // POST: api/Contact
+    [Authorize]
     [HttpPost]
     public async Task<ActionResult> CreateContact(Contact contact)
     {
@@ -42,6 +44,7 @@ public class ContactController : ControllerBase
     }
 
     // DELETE: api/Contact/{id}
+    [Authorize]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteContact(int id)
     {

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using PortofolioBackend.Data.Models;
 
 [ApiController]
@@ -34,6 +35,7 @@ public class SkillController : ControllerBase
     }
 
     // POST: api/Skill
+    [Authorize]
     [HttpPost]
     public async Task<ActionResult> CreateSkill(Skill skill)
     {
@@ -42,6 +44,7 @@ public class SkillController : ControllerBase
     }
 
     // PUT: api/Skill/{id}
+    [Authorize]
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateSkill(int id, Skill skill)
     {
@@ -55,6 +58,7 @@ public class SkillController : ControllerBase
     }
 
     // DELETE: api/Skill/{id}
+    [Authorize]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteSkill(int id)
     {

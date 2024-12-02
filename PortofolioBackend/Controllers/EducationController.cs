@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using PortofolioBackend.Data.Models;
 
 [ApiController]
@@ -34,6 +35,7 @@ public class EducationController : ControllerBase
     }
 
     // POST: api/Education
+    [Authorize]
     [HttpPost]
     public async Task<ActionResult> CreateEducation(Education education)
     {
@@ -42,6 +44,7 @@ public class EducationController : ControllerBase
     }
 
     // PUT: api/Education/{id}
+    [Authorize]
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateEducation(int id, Education education)
     {
@@ -55,6 +58,7 @@ public class EducationController : ControllerBase
     }
 
     // DELETE: api/Education/{id}
+    [Authorize]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteEducation(int id)
     {

@@ -64,8 +64,11 @@ public class AdminAuthService : IAdminAuthService
             new Claim(ClaimTypes.Role, "Admin")
         }),
         Expires = DateTime.UtcNow.AddHours(1),
+        Audience = _configuration["Jwt:Audience"], // Add audience here
+        Issuer = _configuration["Jwt:Issuer"],
         SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
     };
+    Console.WriteLine($"Audience in Token Descriptor: {_configuration["Jwt:Audience"]}");
 
     var token = tokenHandler.CreateToken(tokenDescriptor);
     Console.WriteLine("JWT token generated successfully.");

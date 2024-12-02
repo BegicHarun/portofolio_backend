@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -33,6 +34,7 @@ public class ProjectController : ControllerBase
     }
 
     // POST: api/Project
+    [Authorize] // Remove Roles restriction
     [HttpPost]
     public async Task<ActionResult> CreateProject(Project project)
     {
@@ -41,6 +43,7 @@ public class ProjectController : ControllerBase
     }
 
     // PUT: api/Project/{id}
+    [Authorize]
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateProject(int id, Project project)
     {
@@ -54,6 +57,7 @@ public class ProjectController : ControllerBase
     }
 
     // DELETE: api/Project/{id}
+    [Authorize]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteProject(int id)
     {
