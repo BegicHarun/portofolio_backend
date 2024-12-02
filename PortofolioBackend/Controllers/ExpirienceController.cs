@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using PortofolioBackend.Data.Models;
 
 [ApiController]
@@ -34,6 +35,7 @@ public class ExperienceController : ControllerBase
     }
 
     // POST: api/Experience
+    [Authorize]
     [HttpPost]
     public async Task<ActionResult> CreateExperience(Experience experience)
     {
@@ -42,6 +44,7 @@ public class ExperienceController : ControllerBase
     }
 
     // PUT: api/Experience/{id}
+    [Authorize]
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateExperience(int id, Experience experience)
     {
@@ -55,6 +58,7 @@ public class ExperienceController : ControllerBase
     }
 
     // DELETE: api/Experience/{id}
+    [Authorize]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteExperience(int id)
     {
